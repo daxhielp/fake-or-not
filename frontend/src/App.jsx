@@ -43,7 +43,7 @@ function App() {
   }
 
   return (
-    <div className="container">
+    <div className="app-container">
       <header className="header">
         <h1>Fake News Detector</h1>
         <p>AI-powered verification tool</p>

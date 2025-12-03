@@ -45,8 +45,13 @@ class Article(BaseModel):
 def read_root():
     return {"message": "Fake News Detector API is running"}
 
+
 @app.post("/predict")
 def predict(article: Article):
+    """
+    Handles prediction:
+    Finds and parses article from posted link to run through model.
+    """
     if not model or not vectorizer:
         raise HTTPException(status_code=500, detail="Model not loaded")
     

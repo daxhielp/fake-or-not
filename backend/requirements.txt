@@ -3,3 +3,5 @@ uvicorn
 scikit-learn
 pandas
 pydantic
+newspaper3k
+lxml[html_clean]
