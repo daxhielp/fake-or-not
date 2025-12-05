@@ -14,6 +14,8 @@ function App() {
     setError(null)
     setResult(null)
 
+    console.log(text);
+
     try {
       const response = await fetch('http://localhost:8000/predict', {
         method: 'POST',

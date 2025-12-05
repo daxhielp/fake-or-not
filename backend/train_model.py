@@ -20,6 +20,11 @@ def train():
 
     df = pd.read_csv(DATA_PATH)
     
+    # Data cleaning: drop rows with missing text
+    print(f"Initial data shape: {df.shape}")
+    df.dropna(subset=['text'], inplace=True)
+    print(f"Data shape after dropping NaNs: {df.shape}")
+
     # Get labels
     labels = df.label
     

@@ -18,6 +18,9 @@ env/
 backend/model.pkl
 backend/vectorizer.pkl
 
+# Datasets
+.csv
+
 # Node.js
 node_modules/
 dist/

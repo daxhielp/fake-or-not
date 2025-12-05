@@ -38,6 +38,11 @@ try:
 except Exception as e:
     print(f"Error loading model/vectorizer: {e}")
 
+
+def pre_process(data):
+    # TODO
+    return
+
 class Article(BaseModel):
     text: str
 
