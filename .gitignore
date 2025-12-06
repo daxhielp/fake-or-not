@@ -12,7 +12,6 @@ env/
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb_checkpoints/
-*.html
 
 # Model artifacts
 backend/model.pkl

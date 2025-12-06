@@ -1,10 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+import nltk
+from nltk.stem.porter import PorterStemmer
+from nltk.corpus import stopwords
 import pickle
 import os
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI()
+ps = PorterStemmer()
+nltk.download("stopwords")
 
 # CORS setup
 origins = [
@@ -29,6 +35,7 @@ VECTORIZER_PATH = os.path.join(BASE_DIR, 'vectorizer.pkl')
 model = None
 vectorizer = None
 
+# open model & vectorizer
 try:
     with open(MODEL_PATH, 'rb') as f:
         model = pickle.load(f)
@@ -39,9 +46,24 @@ except Exception as e:
     print(f"Error loading model/vectorizer: {e}")
 
 
-def pre_process(data):
-    # TODO
-    return
+def pre_process(data: str):
+    """
+    Process article text to correct format for model analysis.
+    """
+    result = data.lower()
+    result = result.split()
+
+    # stem words
+    result = [ps.stem(word) for word in result if not word in stopwords.words("english")]
+    result = " ".join(result)
+    return result
+
+
+def get_sentiment(label: int):
+    """Convert the binary labels into appropriate sentiment strings."""
+    return "REAL" if label == 0 else "FAKE"
+
+
 
 class Article(BaseModel):
     text: str
@@ -61,11 +83,14 @@ def predict(article: Article):
         raise HTTPException(status_code=500, detail="Model not loaded")
     
     try:
+        # Preprocess
+        text = pre_process(article.text)
         # Vectorize text
-        tfidf_text = vectorizer.transform([article.text])
+        tfidf_text = vectorizer.transform([text])
         # Predict
         prediction = model.predict(tfidf_text)
-        result = prediction[0]
+        result = get_sentiment(prediction[0])
+        print(result)
         
         return {"prediction": result}
     except Exception as e:
