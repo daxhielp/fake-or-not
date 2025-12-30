@@ -1,14 +1,14 @@
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-  --bg-color: #f8fafc;
-  --card-bg: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --success-color: #16a34a;
-  --danger-color: #dc2626;
-  --border-color: #e2e8f0;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --primary-color: #60a5fa; /* Lighter blue for contrast */
+  --primary-hover: #3b82f6; /* Slightly darker blue on hover */
+  --bg-color: #1a202c; /* Dark background */
+  --card-bg: #2d3748; /* Darker card background */
+  --text-primary: #e2e8f0; /* Light text for dark background */
+  --text-secondary: #a0aec0; /* Slightly darker light text */
+  --success-color: #48bb78; /* Green for success */
+  --danger-color: #fc8181; /* Red for danger */
+  --border-color: #4a5568; /* Darker border color */
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4); /* Darker shadow */
 }
 
 * {
@@ -43,7 +43,7 @@ body {
 .header h1 {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-color), #60a5fa);
+  background: linear-gradient(135deg, var(--primary-color), #90cdf4); /* Adjusted gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;
@@ -73,10 +73,10 @@ body {
   border-radius: 0.5rem;
   font-family: inherit;
   font-size: 1rem;
-  resize: vertical;
   margin-bottom: 1.5rem;
   transition: border-color 0.2s;
-  min-height: 200px;
+  background-color: var(--bg-color); /* Ensure input background is dark */
+  color: var(--text-primary); /* Ensure input text is light */
 }
 
 .news-input:focus {
@@ -101,7 +101,7 @@ button {
 
 .analyze-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: #ffffff; /* White text for primary button */
   flex: 2;
 }
 
@@ -123,7 +123,7 @@ button {
 }
 
 .clear-btn:hover {
-  background-color: #f1f5f9;
+  background-color: #4a5568; /* Darker hover for clear button */
   color: var(--text-primary);
 }
 
@@ -168,8 +168,8 @@ button {
 }
 
 .result-card.real .result-badge {
-  background-color: #dcfce7;
-  color: var(--success-color);
+  background-color: #2f855a; /* Darker green for success badge */
+  color: #e6fffa; /* Lighter text for success badge */
 }
 
 /* Fake Result Styles */
@@ -178,13 +178,13 @@ button {
 }
 
 .result-card.fake .result-badge {
-  background-color: #fee2e2;
-  color: var(--danger-color);
+  background-color: #c53030; /* Darker red for danger badge */
+  color: #fff5f5; /* Lighter text for danger badge */
 }
 
 .error-message {
-  background-color: #fee2e2;
-  color: var(--danger-color);
+  background-color: #c53030; /* Darker red for error message */
+  color: #fff5f5; /* Lighter text for error message */
   padding: 1rem;
   border-radius: 0.5rem;
   margin-top: 1rem;
@@ -196,4 +196,33 @@ button {
   margin-top: 3rem;
   color: var(--text-secondary);
   font-size: 0.875rem;
+}
+
+.confidence-section {
+  margin: 1.5rem 0;
+  text-align: left;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.confidence-label {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  background-color: var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 0.6s ease-out, background-color 0.3s;
+  border-radius: 6px;
 }

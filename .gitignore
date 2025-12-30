@@ -13,10 +13,6 @@ env/
 .ipynb_checkpoints/
 *.ipynb_checkpoints/
 
-# Model artifacts
-backend/model.pkl
-backend/vectorizer.pkl
-
 # Datasets
 .csv
 

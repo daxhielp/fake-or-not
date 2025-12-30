@@ -1,16 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import nltk
-from nltk.stem.porter import PorterStemmer
-from nltk.corpus import stopwords
 import pickle
 import os
 from fastapi.middleware.cors import CORSMiddleware
-
+from newspaper import Article as NewspaperArticle
 
 app = FastAPI()
-ps = PorterStemmer()
-nltk.download("stopwords")
 
 # CORS setup
 origins = [
@@ -46,27 +41,8 @@ except Exception as e:
     print(f"Error loading model/vectorizer: {e}")
 
 
-def pre_process(data: str):
-    """
-    Process article text to correct format for model analysis.
-    """
-    result = data.lower()
-    result = result.split()
-
-    # stem words
-    result = [ps.stem(word) for word in result if not word in stopwords.words("english")]
-    result = " ".join(result)
-    return result
-
-
-def get_sentiment(label: int):
-    """Convert the binary labels into appropriate sentiment strings."""
-    return "REAL" if label == 0 else "FAKE"
-
-
-
-class Article(BaseModel):
-    text: str
+class ArticleRequest(BaseModel):
+    url: str
 
 @app.get("/")
 def read_root():
@@ -74,7 +50,7 @@ def read_root():
 
 
 @app.post("/predict")
-def predict(article: Article):
+def predict(request: ArticleRequest):
     """
     Handles prediction:
     Finds and parses article from posted link to run through model.
@@ -83,18 +59,29 @@ def predict(article: Article):
         raise HTTPException(status_code=500, detail="Model not loaded")
     
     try:
-        # Preprocess
-        text = pre_process(article.text)
-        # Vectorize text
+        # Download and parse article
+        article = NewspaperArticle(request.url)
+        article.download()
+        article.parse()
+        text = article.text
+
+        # Vectorize text directly (model trained with TfidfVectorizer's own preprocessing)
         tfidf_text = vectorizer.transform([text])
-        # Predict
-        prediction = model.predict(tfidf_text)
-        result = get_sentiment(prediction[0])
-        print(result)
         
-        return {"prediction": result}
+        # Predict probability
+        # classes_ are usually [0, 1] where 0 is REAL, 1 is FAKE (based on training script)
+        probabilities = model.predict_proba(tfidf_text)[0]
+        fake_prob = probabilities[1]
+        
+        prediction = "FAKE" if fake_prob > 0.5 else "REAL"
+        confidence = fake_prob * 100
+        
+        return {
+            "prediction": prediction,
+            "confidence": round(confidence, 2)
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Error processing URL: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
