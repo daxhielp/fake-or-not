@@ -11,6 +11,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173", # Default Vite port
     "http://localhost:3000",
+    "https://fake-or-not-6rcp.vercel.app/",
     "*"
 ]
 
