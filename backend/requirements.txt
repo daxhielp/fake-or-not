@@ -2,5 +2,5 @@ fastapi
 uvicorn
 pydantic
 newspaper3k
-sklearn
+scikit-learn
 lxml[html_clean]
