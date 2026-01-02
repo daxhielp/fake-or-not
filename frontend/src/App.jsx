@@ -15,9 +15,9 @@ function App() {
     setResult(null)
 
     console.log(url);
-// https://fake-or-not-qc8v.vercel.app/predict
+
     try {
-      const response = await fetch('http://localhost:8000/predict', {
+      const response = await fetch('https://fake-or-not-qc8v.vercel.app/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
