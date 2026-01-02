@@ -24,13 +24,9 @@ app.add_middleware(
 )
 
 # load pipeline
-try:
-    sess = rt.InferenceSession("model_pipeline.onnx")
-    input_name = sess.get_inputs()[0].name
-    label_name = sess.get_outputs()[0].name
-except Exception as e:
-    print(f"Error loading model-vectorizer pipeline: {e}")
-
+sess = rt.InferenceSession("model_pipeline.onnx")
+input_name = sess.get_inputs()[0].name
+label_name = sess.get_outputs()[0].name
 
 
 def get_article_text(url):
