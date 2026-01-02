@@ -4,7 +4,6 @@ import './App.css'
 function App() {
   const [url, setUrl] = useState('')
   const [result, setResult] = useState(null)
-  const [confidence, setConfidence] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -14,12 +13,11 @@ function App() {
     setLoading(true)
     setError(null)
     setResult(null)
-    setConfidence(null)
 
     console.log(url);
-
+// https://fake-or-not-qc8v.vercel.app/predict
     try {
-      const response = await fetch('https://fake-or-not-qc8v.vercel.app/predict', {
+      const response = await fetch('http://localhost:8000/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +31,6 @@ function App() {
 
       const data = await response.json()
       setResult(data.prediction)
-      setConfidence(data.confidence)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -44,7 +41,6 @@ function App() {
   const handleClear = () => {
     setUrl('')
     setResult(null)
-    setConfidence(null)
     setError(null)
   }
 
@@ -86,17 +82,6 @@ function App() {
             <div className="result-badge">
               {result}
             </div>
-            {confidence !== null && (
-              <div className="confidence-section">
-                <p className="confidence-label">Fake Probability: <strong>{confidence}%</strong></p>
-                <div className="progress-bar-bg">
-                  <div 
-                    className="progress-bar-fill" 
-                    style={{ width: `${confidence}%`, backgroundColor: confidence > 50 ? 'var(--danger-color)' : 'var(--success-color)' }}
-                  ></div>
-                </div>
-              </div>
-            )}
             <p className="result-description">
               {result === 'REAL' 
                 ? 'This article appears to be credible based on our analysis.'

@@ -1,4 +1,4 @@
-# Fake News Detector Website
+# fake-or-not
 
 This project contains a machine learning model to detect fake news, served via a FastAPI backend and accessible through a React frontend.
 
@@ -6,10 +6,9 @@ This project contains a machine learning model to detect fake news, served via a
 
 - `backend/`: Contains the Python/FastAPI server and model training logic.
 - `frontend/`: Contains the React application.
-- `news.csv`: Dataset used for training.
-- `fake_news_detector.ipynb`: Original analysis notebook.
+- `model.ipynb`: Contains model training/analysis.
 
-## Setup & Running
+## Project Overview
 
 ### 1. Backend
 
@@ -40,8 +39,10 @@ predictions to display to the user.
 
 The model uses NLP techniques and Logistic Regression to extract sentiment from text. The text is
 first filtered with a stemmer. Then, the text is quantized by Term Frequency-Inverse Document
-Frequency vectorization. The model uses logistic regression for fake and real classification.
+Frequency vectorization. The model uses logistic regression for a fake/real classification.
 
-Access the dataset used for training: `[text](https://www.kaggle.com/datasets/bhavikjikadara/fake-news-detection)`
+The model is saved using onnx for less memory-intensive deployment.
 
-For more detail, go to `model.ipynb`.
+For more detail, see [model notebook.](/backend/model.ipynb).
+
+[Access dataset used for training](https://www.kaggle.com/datasets/bhavikjikadara/fake-news-detection)

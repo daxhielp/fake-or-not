@@ -1,17 +1,17 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import pickle
-import os
 from fastapi.middleware.cors import CORSMiddleware
 from newspaper import Article as NewspaperArticle
+import numpy as np
+import onnxruntime as rt
 
 app = FastAPI()
 
 # CORS setup
 origins = [
-    "http://localhost:5173", # Default Vite port
+    "http://localhost:5173", # Default prod port
     "http://localhost:3000",
-    "https://fake-or-not-6rcp.vercel.app/",
+    "https://fake-or-not-6rcp.vercel.app",
     "*"
 ]
 
@@ -23,23 +23,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load model and vectorizer
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, 'model.pkl')
-VECTORIZER_PATH = os.path.join(BASE_DIR, 'vectorizer.pkl')
-
-model = None
-vectorizer = None
-
-# open model & vectorizer
+# load pipeline
 try:
-    with open(MODEL_PATH, 'rb') as f:
-        model = pickle.load(f)
-    with open(VECTORIZER_PATH, 'rb') as f:
-        vectorizer = pickle.load(f)
-    print("Model and vectorizer loaded successfully.")
+    sess = rt.InferenceSession("model_pipeline.onnx")
+    input_name = sess.get_inputs()[0].name
+    label_name = sess.get_outputs()[0].name
 except Exception as e:
-    print(f"Error loading model/vectorizer: {e}")
+    print(f"Error loading model-vectorizer pipeline: {e}")
 
 
 class ArticleRequest(BaseModel):
@@ -56,7 +46,7 @@ def predict(request: ArticleRequest):
     Handles prediction:
     Finds and parses article from posted link to run through model.
     """
-    if not model or not vectorizer:
+    if not sess:
         raise HTTPException(status_code=500, detail="Model not loaded")
     
     try:
@@ -67,19 +57,17 @@ def predict(request: ArticleRequest):
         text = article.text
 
         # Vectorize text directly (model trained with TfidfVectorizer's own preprocessing)
-        tfidf_text = vectorizer.transform([text])
+        input_data = np.array([[text]], dtype=object)
+
+        prediction = sess.run([label_name], {input_name: input_data})[0]
+        prediction = prediction.tolist()
+        print(prediction)
+        fake_prob = prediction[0]
         
-        # Predict probability
-        # classes_ are usually [0, 1] where 0 is REAL, 1 is FAKE (based on training script)
-        probabilities = model.predict_proba(tfidf_text)[0]
-        fake_prob = probabilities[1]
-        
-        prediction = "FAKE" if fake_prob > 0.5 else "REAL"
-        confidence = fake_prob * 100
+        prediction = "FAKE" if fake_prob == 1 else "REAL"
         
         return {
             "prediction": prediction,
-            "confidence": round(confidence, 2)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing URL: {str(e)}")
