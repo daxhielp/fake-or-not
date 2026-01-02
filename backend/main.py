@@ -35,7 +35,7 @@ def get_article_text(url):
     
     :param url: news link url
     """
-    a = article(url)
+    a = article(url=url)
     a.download()
     a.parse()
     return a.text
