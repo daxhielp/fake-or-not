@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from newspaper import Article as NewspaperArticle
+from newspaper import article
 import numpy as np
 import onnxruntime as rt
 
@@ -32,8 +32,36 @@ except Exception as e:
     print(f"Error loading model-vectorizer pipeline: {e}")
 
 
+
+def get_article_text(url):
+    """
+    Extracts all text from an given link, expectedly a news article.
+    
+    :param url: news link url
+    """
+    a = article(url)
+    a.download()
+    a.parse()
+    return a.text
+
+def get_prediction(text):
+    """
+    Analyzes given text to determine a fake/real analysis
+    
+    :param text: Text to be analyzed by the model
+    """
+    text = text.replace('\n', ' ').strip() # clean text
+
+    input_data = np.array([[text]], dtype=object)
+    prediction = sess.run([label_name], {input_name: input_data})[0].tolist()
+    label = prediction[0]
+    prediction = "FAKE" if label == 1 else "REAL"
+    return prediction
+
+
 class ArticleRequest(BaseModel):
     url: str
+
 
 @app.get("/")
 def read_root():
@@ -51,20 +79,10 @@ def predict(request: ArticleRequest):
     
     try:
         # Download and parse article
-        article = NewspaperArticle(request.url)
-        article.download()
-        article.parse()
-        text = article.text
+        text = get_article_text(request.url)
 
-        # Vectorize text directly (model trained with TfidfVectorizer's own preprocessing)
-        input_data = np.array([[text]], dtype=object)
-
-        prediction = sess.run([label_name], {input_name: input_data})[0]
-        prediction = prediction.tolist()
-        print(prediction)
-        fake_prob = prediction[0]
-        
-        prediction = "FAKE" if fake_prob == 1 else "REAL"
+        # Run text thru model
+        prediction = get_prediction(text)
         
         return {
             "prediction": prediction,
