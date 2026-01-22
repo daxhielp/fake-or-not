@@ -1,6 +1,6 @@
 # fake-or-not
 
-This project contains a machine learning model to detect fake news, served via a FastAPI backend and accessible through a React frontend.
+An end-to-end model that detects if a news article is fake, or not. Built with React, hosted with Vercel, and served with FastAPI.
 
 ## Project Structure
 
